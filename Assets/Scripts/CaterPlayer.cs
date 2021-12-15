@@ -37,16 +37,22 @@ public class CaterPlayer : MonoBehaviour
 
     public bool startGrounded = false;
 
+    private MobileInputs.TouchState currentState;
+    private MobileInputs mobileInputs;
+
     void Awake(){
         rb = gameObject.GetComponent<Rigidbody2D>();
         hj = gameObject.GetComponent<HingeJoint2D>();
         anim = crawlBody.GetComponent<Animator>();
         startPos = transform.position;
+        mobileInputs = gameObject.GetComponent<MobileInputs>();
+        currentState = mobileInputs.currentState;
+        pulleySelected = null;
     }
 
-    // Update is called once per frame
     void Update()
     {
+
         if(StateManager.smInstance.IsPlaying()){
             if(timer <=0 && winState){ //give it a sec before we win
                 WinZoom();
@@ -61,7 +67,109 @@ public class CaterPlayer : MonoBehaviour
             if(grounded){
                 anim.SetFloat("Velocity",Mathf.Abs(rb.velocity.x));
             }
-            if(Input.GetKey("a")|| Input.GetKey("left")){
+
+            //KEYS
+            //GetKeyboardInputs();
+
+            //Mobile
+            if(pulleySelected == null && (currentState == MobileInputs.TouchState.SwipeUp || currentState == MobileInputs.TouchState.SwipeDown) && mobileInputs.currentState == currentState){
+                //don't do the thing
+                //This is to prevent the swipe up & down from executing more than one time on a swipe
+            } 
+            else{
+                currentState = mobileInputs.currentState;
+                GetMobileInputs();
+            }
+           
+        }
+    }
+
+    private void GetMobileInputs(){
+        if(currentState == MobileInputs.TouchState.SwipeLeft){
+            if(attached){
+                rb.AddRelativeForce(new Vector3(-1, 0,0) * pushForce);
+                AudioManager.audioManager.Play("Swing");
+            }
+            else if(grounded){
+                if(facingRight){
+                    Flip();
+                }
+                rb.velocity = new Vector2(-1*movementSpeed, rb.velocity.y);
+            }
+        }
+        if(currentState == MobileInputs.TouchState.SwipeRight){
+            if(attached){
+                rb.AddRelativeForce(new Vector3(1, 0,0) * pushForce);
+                AudioManager.audioManager.Play("Swing");
+            }
+            else if(grounded){
+                if(!facingRight){
+                    Flip();
+                }
+                rb.velocity = new Vector2(1*movementSpeed, rb.velocity.y);
+            }
+        }
+        if(currentState == MobileInputs.TouchState.SwipeUp){
+            // Debug.Log("CRANKIN lean distance worked");
+            // Debug.Log("slide up");
+            if(pulleySelected != null){
+                AudioManager.audioManager.Play("Crank");
+                pulleySelected.GetComponent<Crank>().Rotate(-1);
+            }
+            else if (attached){
+                Slide(1);
+            }
+            
+        }
+        if(currentState == MobileInputs.TouchState.SwipeDown){
+           if(pulleySelected != null){
+                AudioManager.audioManager.Play("Crank");
+                pulleySelected.GetComponent<Crank>().Rotate(1);
+            }
+            else if (attached){
+                Slide(-1);
+            }
+        }
+        if(currentState == MobileInputs.TouchState.Tap)
+        {
+                Vector3 tapPos = mobileInputs.GetTapPos();
+                Vector2 tapPos2D = new Vector2(tapPos.x, tapPos.y);
+                RaycastHit2D hit = Physics2D.Raycast(tapPos2D, Vector2.zero);
+                if(hit.collider != null && hit.transform.gameObject.tag == "Crank")
+                {
+                    if(pulleySelected != hit.transform.gameObject)
+                    {
+                        Debug.Log("Hit something that isnt what is selected already");
+                        if(pulleySelected != null){
+                            Debug.Log("Deselecting whats currently selected");
+                             pulleySelected.GetComponent<Crank>().Deselect();
+                        }
+                        Debug.Log("Setting pulley to "+hit.transform.gameObject.name);
+                        pulleySelected = hit.transform.gameObject;
+                        pulleySelected.GetComponent<Crank>().Select();
+                    }
+                    else if (pulleySelected == hit.transform.gameObject){
+                        Debug.Log("hit a crank and its the one we already hit so deselecting it");
+                        pulleySelected.GetComponent<Crank>().Deselect();
+                        pulleySelected = null;
+                    }
+                }
+                else{
+                    if(pulleySelected != null){
+                         Debug.Log("tapped somewhere that had no hit so deselecting the crank");
+                        pulleySelected.GetComponent<Crank>().Deselect();
+                        pulleySelected = null;
+                    }
+                    if(attached){
+                        AudioManager.audioManager.Play("Detach");
+                        Detach();
+                    }
+                }
+        }
+    }
+
+    private void GetKeyboardInputs(){
+         if(Input.GetKey("a")|| Input.GetKey("left")){
                 if(attached){
                     rb.AddRelativeForce(new Vector3(-1, 0,0) * pushForce);
                 }
@@ -135,7 +243,6 @@ public class CaterPlayer : MonoBehaviour
                 AudioManager.audioManager.Play("Crank");
                 pulleySelected.GetComponent<Crank>().Rotate(-1);
             }
-        }
     }
 
     public void Attach(Rigidbody2D ropeBone){

@@ -490,6 +490,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -550,6 +552,7 @@ MonoBehaviour:
     m_Center: {x: 0.010699391, y: 1.044413, z: 0}
     m_Extent: {x: 1.4356322, y: 2.1277893, z: 0}
   m_UseBatching: 1
+  m_AlwaysUpdate: 1
 --- !u!70 &7599461190039120731
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -661,6 +664,7 @@ GameObject:
   - component: {fileID: 7599461190307353240}
   - component: {fileID: 7599461190307353191}
   - component: {fileID: 7599461190307353243}
+  - component: {fileID: 7639454164097357833}
   m_Layer: 0
   m_Name: CaterPlayer
   m_TagString: Player
@@ -705,7 +709,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &7599461190307353191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -719,8 +723,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
-  pushForce: 50
-  movementSpeed: 2
+  pushForce: 500
+  movementSpeed: 5
   attached: 0
   facingRight: 0
   attachedTo: {fileID: 0}
@@ -728,6 +732,7 @@ MonoBehaviour:
   pulleySelected: {fileID: 0}
   swingBody: {fileID: 7599461190446406168}
   crawlBody: {fileID: 7599461190039120730}
+  startGrounded: 0
 --- !u!233 &7599461190307353243
 HingeJoint2D:
   m_ObjectHideFlags: 0
@@ -752,6 +757,19 @@ HingeJoint2D:
   m_AngleLimits:
     m_LowerAngle: 0
     m_UpperAngle: 359
+--- !u!114 &7639454164097357833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7599461190307353190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2ad4a5c6c9a4785b384436c7c6b015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 5
 --- !u!1 &7599461190417871704
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,6 +977,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1016,9 +1036,10 @@ MonoBehaviour:
   - {fileID: 7599461190504529597}
   - {fileID: 7599461189436936120}
   m_Bounds:
-    m_Center: {x: 0.010699391, y: 1.044413, z: 0}
-    m_Extent: {x: 1.4356322, y: 2.1277893, z: 0}
+    m_Center: {x: 0.18489856, y: -0.6065444, z: 0}
+    m_Extent: {x: 0.9345777, y: 1.7343746, z: 0}
   m_UseBatching: 1
+  m_AlwaysUpdate: 1
 --- !u!1 &7599461190504529594
 GameObject:
   m_ObjectHideFlags: 0

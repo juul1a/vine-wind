@@ -11,17 +11,19 @@ public class RopeSegment : MonoBehaviour
     // public Transform anchor;
 
     void Start(){
-        GameObject myConnection = gameObject.GetComponent<HingeJoint2D>().connectedBody.gameObject;
-        RopeSegment aboveRopeSeg = myConnection.GetComponent<RopeSegment>();
+        connectedAbove = gameObject.GetComponent<HingeJoint2D>().connectedBody.gameObject;
+        RopeSegment aboveRopeSeg = connectedAbove.GetComponent<RopeSegment>();
         if(aboveRopeSeg != null){
             //Set the connection above me to know that I am below it
             aboveRopeSeg.connectedBelow = gameObject;
+            float spriteBottom =  connectedAbove.GetComponent<SpriteRenderer>().bounds.size.y;
+            // Debug.Log("Setting anchor to spriteBottom = "+spriteBottom+" For sprite "+connectedAbove.GetComponent<SpriteRenderer>().sprite);
+            GetComponent<HingeJoint2D>().connectedAnchor = new Vector2(0, spriteBottom)*-1;
         }
-        connectedAbove = gameObject.GetComponent<HingeJoint2D>().connectedBody.gameObject;
-       
-        float spriteBottom =  connectedAbove.GetComponent<SpriteRenderer>().bounds.size.y;
-        // Debug.Log("Setting anchor to spriteBottom = "+spriteBottom+" For sprite "+connectedAbove.GetComponent<SpriteRenderer>().sprite);
-        GetComponent<HingeJoint2D>().connectedAnchor = new Vector2(0, spriteBottom)*-1;
+        else{
+             GetComponent<HingeJoint2D>().connectedAnchor = new Vector2(0, 0);
+        }
+        
     }
     public void ResetAnchor(){
         connectedAbove = gameObject.GetComponent<HingeJoint2D>().connectedBody.gameObject;
